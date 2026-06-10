@@ -1,0 +1,19 @@
+# Frontend
+healthcare-frontend/node_modules/
+healthcare-frontend/dist/
+healthcare-frontend/.env
+healthcare-frontend/.env.local
+healthcare-frontend/venv/
+
+# Backend
+backend/venv/
+backend/__pycache__/
+backend/.env
+backend/*.pyc
+backend/app/__pycache__/
+backend/**/__pycache__/
+
+# General
+.DS_Store
+Thumbs.db
+*.log
