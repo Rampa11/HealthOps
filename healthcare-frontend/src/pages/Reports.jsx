@@ -1,6 +1,6 @@
 // src/pages/Reports.jsx
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 import Sidebar from "../components/Sidebar";
 import TopNav from "../components/TopNav";
@@ -16,10 +16,10 @@ function Reports({ setToken }) {
   const fetchAssignments = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://127.0.0.1:8000/assignments/", {
+      const res = await api.get("/assignments/", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAssignments(res.data);
+      setAssignments(Array.isArray(res.data) ? res.data : res.data.items || res.data.data || []);
     } catch (err) {
       console.error("❌ ASSIGNMENT ERROR:", err.response?.data || err.message);
     } finally {
@@ -29,10 +29,10 @@ function Reports({ setToken }) {
 
   const fetchNurses = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/nurses/", {
+      const res = await api.get("/nurses/", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setNurses(res.data);
+      setNurses(Array.isArray(res.data) ? res.data : res.data.items || res.data.data || []);
     } catch (err) {
       console.error("❌ NURSE ERROR:", err.response?.data || err.message);
     }

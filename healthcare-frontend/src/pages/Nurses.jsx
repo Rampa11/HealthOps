@@ -1,6 +1,6 @@
 // src/pages/Nurses.jsx
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 import Sidebar from "../components/Sidebar";
 import TopNav from "../components/TopNav";
@@ -32,10 +32,10 @@ function Nurses({ setToken }) {
   const fetchNurses = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://127.0.0.1:8000/nurses/", {
+      const res = await api.get("/nurses/", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setNurses(res.data);
+      setNurses(Array.isArray(res.data) ? res.data : res.data.items || res.data.data || []);
     } catch (err) {
       console.error("❌ NURSE ERROR:", err.response?.data || err.message);
     } finally {
@@ -57,7 +57,7 @@ function Nurses({ setToken }) {
     e.preventDefault();
     try {
       setSubmitting(true);
-      const res = await axios.post("http://127.0.0.1:8000/users/", userForm, {
+      const res = await api.post("/users/", userForm, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCreatedUserId(res.data.id);
@@ -74,7 +74,7 @@ function Nurses({ setToken }) {
     e.preventDefault();
     try {
       setSubmitting(true);
-      await axios.post("http://127.0.0.1:8000/nurses/", null, {
+      await api.post("/nurses/", null, {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           user_id: createdUserId,

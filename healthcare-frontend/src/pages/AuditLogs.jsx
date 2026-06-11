@@ -1,6 +1,6 @@
 // src/pages/AuditLogs.jsx
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 
 import Sidebar from "../components/Sidebar";
 import TopNav from "../components/TopNav";
@@ -29,7 +29,7 @@ function AuditLogs({ setToken }) {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://127.0.0.1:8000/audit-logs/", {
+      const res = await api.get("/audit-logs/", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setLogs(res.data);

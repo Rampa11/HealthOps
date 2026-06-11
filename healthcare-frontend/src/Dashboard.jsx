@@ -1,6 +1,6 @@
 // src/Dashboard.jsx
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import api from "./api";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 // COMPONENTS
@@ -167,10 +167,10 @@ function Dashboard({ setToken }) {
   const fetchAssignments = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://127.0.0.1:8000/assignments/", {
+      const res = await api.get("/assignments/", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAssignments(res.data);
+      setAssignments(Array.isArray(res.data) ? res.data : res.data.items || res.data.data || []);
     } catch (err) {
       console.error("❌ ASSIGNMENT ERROR:", err.response?.data || err.message);
     } finally {
@@ -180,10 +180,11 @@ function Dashboard({ setToken }) {
 
   const fetchNurses = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/nurses/", {
+      const res = await api.get("/nurses/", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setNurses(res.data);
+      console.log("NURSES RESPONSE:", res.data);
+      setNurses(Array.isArray(res.data) ? res.data : res.data.items || res.data.data || []);
     } catch (err) {
       console.error("❌ NURSE ERROR:", err.response?.data || err.message);
     }
@@ -200,9 +201,7 @@ function Dashboard({ setToken }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
-        "http://127.0.0.1:8000/assignments/",
-        {
+      await api.post("/assignments/", {
           ...form,
           start_time: new Date(form.start_time).toISOString(),
           end_time: new Date(form.end_time).toISOString(),
@@ -268,8 +267,7 @@ function Dashboard({ setToken }) {
     });
 
     try {
-      await axios.patch(
-        `http://127.0.0.1:8000/assignments/${moved.id}/`,
+      await api.patch(`/assignments/${moved.id}/`,
         { status: moved.status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -397,84 +395,234 @@ function Dashboard({ setToken }) {
         </div>
 
         {/* ── KANBAN ───────────────────────────────────────────────── */}
-        <div>
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-500">
-              Assignment Board
-            </h2>
-            <span className="text-xs text-gray-600">Drag cards to update status</span>
-          </div>
+<div>
+  <div className="flex items-center justify-between mb-5">
+    <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-500">
+      Assignment Board
+    </h2>
+    <span className="text-xs text-gray-600">Drag cards to update status</span>
+  </div>
 
-          {loading ? (
-            <div className="flex items-center gap-3 text-gray-500 py-8">
-              <div className="w-4 h-4 rounded-full border-2 border-teal-500 border-t-transparent animate-spin" />
-              Loading assignments...
-            </div>
-          ) : assignments.length === 0 ? (
-            <div className="text-center py-16 border border-dashed border-[#1e3a5f] rounded-2xl">
-              <p className="text-gray-500">No assignments yet.</p>
-              <p className="text-gray-600 text-sm mt-1">Create one using the form above.</p>
-            </div>
-          ) : (
-            <DragDropContext onDragEnd={onDragEnd}>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                {Object.entries(board).map(([id, column]) => (
-                  <Droppable droppableId={id} key={id}>
-                    {(provided, snapshot) => (
-                      <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        className={`rounded-xl border ${column.color} min-h-[280px] transition-colors duration-200 ${
-                          snapshot.isDraggingOver ? "bg-[#0d1f3c]" : "bg-[#0a1628]"
-                        }`}
-                      >
-                        {/* Column header */}
-                        <div className="px-4 py-3 border-b border-[#1e3a5f] flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full ${column.dot}`} />
-                          <span className="text-sm font-semibold text-white">{column.name}</span>
-                          <span className="ml-auto text-xs text-gray-500 bg-[#0d1f3c] px-2 py-0.5 rounded-full">
-                            {column.items.length}
-                          </span>
-                        </div>
-
-                        <div className="p-3 space-y-2">
-                          {column.items.map((item, index) => (
-                            <Draggable key={item.id} draggableId={item.id.toString()} index={index}>
-                              {(provided, snapshot) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className={`p-3.5 rounded-lg border transition-all ${
-                                    snapshot.isDragging
-                                      ? "bg-blue-700 border-blue-500 shadow-xl shadow-blue-900/40"
-                                      : "bg-[#0d1f3c] border-[#1e3a5f] hover:border-teal-700"
-                                  }`}
-                                >
-                                  <p className="font-semibold text-white text-sm">{item.patient_name}</p>
-                                  <p className="text-xs text-teal-400 mt-0.5">
-                                    {item.nurse_name || "Unassigned"}
-                                  </p>
-                                  <p className="text-xs text-gray-500 mt-2">
-                                    {new Date(item.start_time).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-                                    {" → "}
-                                    {new Date(item.end_time).toLocaleString([], { hour: "2-digit", minute: "2-digit" })}
-                                  </p>
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
-                        </div>
-                      </div>
-                    )}
-                  </Droppable>
-                ))}
+  {loading ? (
+    <div className="flex items-center gap-3 text-gray-500 py-8">
+      <div className="w-4 h-4 rounded-full border-2 border-teal-500 border-t-transparent animate-spin" />
+      Loading assignments...
+    </div>
+  ) : assignments.length === 0 ? (
+    <div className="text-center py-16 border border-dashed border-[#1e3a5f] rounded-2xl">
+      <p className="text-gray-500">No assignments yet.</p>
+      <p className="text-gray-600 text-sm mt-1">Create one using the form above.</p>
+    </div>
+  ) : (
+    <>
+      {/* ── SUMMARY BAR ─────────────────────────────────────── */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        {[
+          {
+            label: "Pending",
+            count: assignments.filter((a) => a.status === "pending").length,
+            border: "border-yellow-700/40",
+            bg: "bg-yellow-900/20",
+            text: "text-yellow-400",
+            dot: "bg-yellow-400",
+            subtext: "text-yellow-700",
+          },
+          {
+            label: "In Progress",
+            count: assignments.filter((a) => a.status === "in_progress").length,
+            border: "border-blue-700/40",
+            bg: "bg-blue-900/20",
+            text: "text-blue-400",
+            dot: "bg-blue-400",
+            subtext: "text-blue-800",
+          },
+          {
+            label: "Completed",
+            count: assignments.filter((a) => a.status === "completed").length,
+            border: "border-green-700/40",
+            bg: "bg-green-900/20",
+            text: "text-green-400",
+            dot: "bg-green-400",
+            subtext: "text-green-800",
+          },
+        ].map((item) => (
+          <div
+            key={item.label}
+            className={`rounded-xl border ${item.border} ${item.bg} px-5 py-4 flex items-center justify-between`}
+          >
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`w-2 h-2 rounded-full ${item.dot}`} />
+                <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
+                  {item.label}
+                </span>
               </div>
-            </DragDropContext>
-          )}
-        </div>
+              <p className={`text-3xl font-bold ${item.text}`}>{item.count}</p>
+            </div>
+            <div className="text-right">
+              <p className={`text-2xl font-bold ${item.text} opacity-30`}>
+                {assignments.length > 0
+                  ? `${Math.round((item.count / assignments.length) * 100)}%`
+                  : "0%"}
+              </p>
+              <p className="text-xs text-gray-600 mt-1">
+                of {assignments.length} total
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
 
+      {/* ── PROGRESS BAR ────────────────────────────────────── */}
+      <div className="mb-6">
+        <div className="flex justify-between text-xs text-gray-600 mb-1.5">
+          <span>Overall Progress</span>
+          <span>
+            {assignments.filter((a) => a.status === "completed").length} of{" "}
+            {assignments.length} completed
+          </span>
+        </div>
+        <div className="w-full bg-[#0d1f3c] rounded-full h-2 flex overflow-hidden">
+          <div
+            className="bg-yellow-500 h-2 transition-all duration-500"
+            style={{
+              width: `${Math.round(
+                (assignments.filter((a) => a.status === "pending").length /
+                  assignments.length) *
+                  100
+              )}%`,
+            }}
+          />
+          <div
+            className="bg-blue-500 h-2 transition-all duration-500"
+            style={{
+              width: `${Math.round(
+                (assignments.filter((a) => a.status === "in_progress").length /
+                  assignments.length) *
+                  100
+              )}%`,
+            }}
+          />
+          <div
+            className="bg-green-500 h-2 transition-all duration-500"
+            style={{
+              width: `${Math.round(
+                (assignments.filter((a) => a.status === "completed").length /
+                  assignments.length) *
+                  100
+              )}%`,
+            }}
+          />
+        </div>
+        <div className="flex gap-4 mt-2">
+          <span className="flex items-center gap-1.5 text-xs text-gray-600">
+            <span className="w-2 h-2 rounded-full bg-yellow-500" /> Pending
+          </span>
+          <span className="flex items-center gap-1.5 text-xs text-gray-600">
+            <span className="w-2 h-2 rounded-full bg-blue-500" /> In Progress
+          </span>
+          <span className="flex items-center gap-1.5 text-xs text-gray-600">
+            <span className="w-2 h-2 rounded-full bg-green-500" /> Completed
+          </span>
+        </div>
+      </div>
+
+      {/* ── KANBAN COLUMNS ──────────────────────────────────── */}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {Object.entries(board).map(([id, column]) => (
+            <Droppable droppableId={id} key={id}>
+              {(provided, snapshot) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className={`rounded-xl border ${column.color} min-h-[280px] transition-colors duration-200 ${
+                    snapshot.isDraggingOver ? "bg-[#0d1f3c]" : "bg-[#0a1628]"
+                  }`}
+                >
+                  {/* Column header */}
+                  <div className="px-4 py-3 border-b border-[#1e3a5f] flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${column.dot}`} />
+                    <span className="text-sm font-semibold text-white">
+                      {column.name}
+                    </span>
+
+                    {/* Percentage */}
+                    <span className="text-xs text-gray-600">
+                      {assignments.length > 0
+                        ? `${Math.round(
+                            (column.items.length / assignments.length) * 100
+                          )}%`
+                        : "0%"}
+                    </span>
+
+                    {/* Count badge */}
+                    <span
+                      className={`ml-auto text-xs font-bold px-2.5 py-1 rounded-full border ${
+                        id === "pending"
+                          ? "bg-yellow-900/40 text-yellow-400 border-yellow-700/40"
+                          : id === "inProgress"
+                          ? "bg-blue-900/40 text-blue-400 border-blue-700/40"
+                          : "bg-green-900/40 text-green-400 border-green-700/40"
+                      }`}
+                    >
+                      {column.items.length}{" "}
+                      {column.items.length === 1 ? "task" : "tasks"}
+                    </span>
+                  </div>
+
+                  <div className="p-3 space-y-2">
+                    {column.items.map((item, index) => (
+                      <Draggable
+                        key={item.id}
+                        draggableId={item.id.toString()}
+                        index={index}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={`p-3.5 rounded-lg border transition-all ${
+                              snapshot.isDragging
+                                ? "bg-blue-700 border-blue-500 shadow-xl shadow-blue-900/40"
+                                : "bg-[#0d1f3c] border-[#1e3a5f] hover:border-teal-700"
+                            }`}
+                          >
+                            <p className="font-semibold text-white text-sm">
+                              {item.patient_name}
+                            </p>
+                            <p className="text-xs text-teal-400 mt-0.5">
+                              {item.nurse_name || "Unassigned"}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-2">
+                              {new Date(item.start_time).toLocaleString([], {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                              {" → "}
+                              {new Date(item.end_time).toLocaleString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                </div>
+              )}
+            </Droppable>
+          ))}
+        </div>
+      </DragDropContext>
+    </>
+  )}
+</div>
         {/* ── NURSE CARDS ──────────────────────────────────────────── */}
         <div>
           <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-500 mb-5">
