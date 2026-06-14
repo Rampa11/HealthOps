@@ -42,6 +42,7 @@ def create_tenant(data: TenantCreate, db: Session = Depends(get_db)):
     tenant = Tenant(
         name=data.name,
         email=data.email,
+        password=hash_password(data.password),
         is_active=False  # 🔐 must subscribe first
     )
 
