@@ -11,6 +11,7 @@ import Nurses from "./pages/Nurses";
 import Reports from "./pages/Reports";
 import Billing from "./pages/Billing";
 import AuditLogs from "./pages/AuditLogs";
+import Doctors from "./pages/Doctors";
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
             <Route path="/reports" element={<Reports setToken={setToken} />} />
             <Route path="/billing" element={<Billing setToken={setToken} />} />
             <Route path="/audit-logs" element={<AuditLogs setToken={setToken} />} />
+            <Route path="/doctors" element={<Doctors setToken={setToken} />} />
           </Routes>
         </div>
       </div>

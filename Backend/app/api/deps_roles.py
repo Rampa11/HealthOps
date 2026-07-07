@@ -14,7 +14,6 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
-        # ✅ VALIDATE REQUIRED FIELDS
         if not payload.get("user_id") or not payload.get("tenant_id") or not payload.get("role"):
             raise HTTPException(status_code=401, detail="Invalid token payload")
 
@@ -45,4 +44,18 @@ def require_staff(user=Depends(get_current_user)):
 def require_nurse(user=Depends(get_current_user)):
     if user.get("role") != "nurse":
         raise HTTPException(status_code=403, detail="Nurse access required")
+    return user
+
+
+# 🩺 DOCTOR ONLY
+def require_doctor(user=Depends(get_current_user)):
+    if user.get("role") != "doctor":
+        raise HTTPException(status_code=403, detail="Doctor access required")
+    return user
+
+
+# 🟡 ADMIN + STAFF + DOCTOR (for shared clinical views)
+def require_clinical(user=Depends(get_current_user)):
+    if user.get("role") not in ["admin", "staff", "doctor"]:
+        raise HTTPException(status_code=403, detail="Clinical access required")
     return user
