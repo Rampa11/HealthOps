@@ -4,3 +4,7 @@ from app.models.nurse import Nurse
 from app.models.nurse_availability import NurseAvailability
 from app.models.assignment import Assignment
 from app.models.billing import Billing
+from app.models.audit_log import AuditLog
+from app.models.doctor import Doctor
+from app.models.patient import Patient
+from app.models.consultation_request import ConsultationRequest
