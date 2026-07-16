@@ -11,6 +11,7 @@ import {
   Bars3Icon,
   XMarkIcon,
   HeartIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 
 function Sidebar() {
@@ -22,6 +23,7 @@ function Sidebar() {
     { name: "Scheduling", icon: CalendarIcon, path: "/scheduling" },
     { name: "Nurses", icon: UserGroupIcon, path: "/nurses" },
     { name: "Doctors", icon: HeartIcon, path: "/doctors" },
+    { name: "Patients", icon: UserIcon, path: "/patients" },
     { name: "Billing", icon: CreditCardIcon, path: "/billing" },
     { name: "Reports", icon: ChartBarIcon, path: "/reports" },
     { name: "Audit Logs", icon: ClipboardDocumentListIcon, path: "/audit-logs" },
