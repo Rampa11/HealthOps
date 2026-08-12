@@ -34,10 +34,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
 
     if not user or not verify_password(data.password, user.password):
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid email or password"
-        )
+        raise HTTPException(status_code=401, detail="Invalid email or password")
 
     # 🔥 GET TENANT
     tenant = db.query(Tenant).filter(Tenant.id == user.tenant_id).first()
@@ -48,16 +45,13 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     # 🔒 BLOCK IF SUBSCRIPTION INACTIVE
     if not tenant.is_active:
         raise HTTPException(
-            status_code=403,
-            detail="Subscription inactive. Please subscribe."
+            status_code=403, detail="Subscription inactive. Please subscribe."
         )
 
     # 🔥 CREATE TOKEN (WITH ROLE)
-    token = create_access_token({
-        "tenant_id": tenant.id,
-        "user_id": user.id,
-        "role": user.role
-    })
+    token = create_access_token(
+        {"tenant_id": tenant.id, "user_id": user.id, "role": user.role}
+    )
 
     # ✅ AUDIT LOG
     log_action(
@@ -66,12 +60,12 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
         user_id=user.id,
         action="LOGIN",
         entity="AUTH",
-        entity_id=user.id
+        entity_id=user.id,
     )
 
     return {
         "access_token": token,
         "token_type": "bearer",
         "role": user.role,
-        "is_active": tenant.is_active
+        "is_active": tenant.is_active,
     }

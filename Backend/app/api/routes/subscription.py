@@ -22,23 +22,18 @@ def get_db():
 @router.post("/create-checkout-session")
 def create_checkout_session(
     plan: str,
-    user=Depends(get_current_user),   # 🔐 JWT payload
-    db: Session = Depends(get_db)
+    user=Depends(get_current_user),  # 🔐 JWT payload
+    db: Session = Depends(get_db),
 ):
     # 🔥 GET TENANT FROM DB
-    tenant = db.query(Tenant).filter(
-        Tenant.id == user.get("tenant_id")
-    ).first()
+    tenant = db.query(Tenant).filter(Tenant.id == user.get("tenant_id")).first()
 
     if not tenant:
         raise HTTPException(status_code=404, detail="Tenant not found")
 
     # 🔒 OPTIONAL: BLOCK IF ALREADY ACTIVE
     if tenant.is_active:
-        raise HTTPException(
-            status_code=400,
-            detail="Subscription already active"
-        )
+        raise HTTPException(status_code=400, detail="Subscription already active")
 
     # 🔥 PLAN MAPPING
     price_map = {
@@ -62,12 +57,8 @@ def create_checkout_session(
                     "quantity": 1,
                 }
             ],
-
             # 🔐 SAFE TENANT LINK
-            metadata={
-                "tenant_id": tenant.id
-            },
-
+            metadata={"tenant_id": tenant.id},
             success_url="http://localhost:3000/success",
             cancel_url="http://localhost:3000/cancel",
         )
@@ -79,7 +70,7 @@ def create_checkout_session(
             user_id=user.get("user_id"),
             action="CREATE_SUBSCRIPTION_SESSION",
             entity="SUBSCRIPTION",
-            entity_id=tenant.id
+            entity_id=tenant.id,
         )
 
         return {"url": session.url}

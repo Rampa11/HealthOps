@@ -23,9 +23,7 @@ async def stripe_webhook(request: Request):
         raise HTTPException(status_code=500, detail="Webhook secret not configured")
 
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, endpoint_secret
-        )
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
     except stripe.error.SignatureVerificationError:
         raise HTTPException(status_code=400, detail="Invalid Stripe signature")
     except Exception as e:
@@ -82,7 +80,7 @@ async def stripe_webhook(request: Request):
                 user_id=None,  # webhook has no user context
                 action="SUBSCRIPTION_ACTIVATED",
                 entity="TENANT",
-                entity_id=tenant.id
+                entity_id=tenant.id,
             )
 
             logger.info(f"Tenant {tenant_id} activated successfully")

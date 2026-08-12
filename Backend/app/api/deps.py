@@ -16,18 +16,13 @@ def get_db():
 
 
 # ✅ GET CURRENT TENANT (SAFE)
-def get_current_tenant(
-    user=Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
+def get_current_tenant(user=Depends(get_current_user), db: Session = Depends(get_db)):
     tenant_id = user.get("tenant_id")
 
     if not tenant_id:
         raise HTTPException(status_code=401, detail="Invalid token payload")
 
-    tenant = db.query(Tenant).filter(
-        Tenant.id == tenant_id
-    ).first()
+    tenant = db.query(Tenant).filter(Tenant.id == tenant_id).first()
 
     if not tenant:
         raise HTTPException(status_code=404, detail="Tenant not found")
@@ -36,12 +31,9 @@ def get_current_tenant(
 
 
 # ✅ ACTIVE TENANT CHECK
-def get_active_tenant(
-    tenant=Depends(get_current_tenant)
-):
+def get_active_tenant(tenant=Depends(get_current_tenant)):
     if not tenant.is_active:
         raise HTTPException(
-            status_code=403,
-            detail="Subscription inactive. Please subscribe."
+            status_code=403, detail="Subscription inactive. Please subscribe."
         )
     return tenant

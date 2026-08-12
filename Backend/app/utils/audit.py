@@ -7,7 +7,7 @@ def log_action(db, tenant_id, user_id, action, entity, entity_id=None):
         user_id=user_id,
         action=action,
         entity=entity,
-        entity_id=entity_id
+        entity_id=entity_id,
     )
 
     db.add(log)

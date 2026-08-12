@@ -6,10 +6,16 @@ from app.db.base import Base
 from app.db.session import engine
 
 # Models (IMPORTANT: must be imported)
-from app.models import tenant, user, doctor
-from app.models import tenant, user, patient, consultation_request
+from app.models import (
+    tenant,
+    user,
+    doctor,
+    patient,
+    consultation_request,
+)
 
 # Routes
+from app.api.routes.public import router as public_route
 from app.api.routes.tenant import router as tenant_route
 from app.api.routes.user import router as user_route
 from app.api.routes.nurse import router as nurse_route
@@ -22,7 +28,6 @@ from app.api.routes.auth import router as auth_route
 from app.api.routes.audit import router as audit_route
 from app.api.routes.doctor import router as doctor_route
 from app.api.routes.patient import router as patient_route
-
 
 app = FastAPI(title="Healthcare Operations System")
 
@@ -51,6 +56,7 @@ def root():
 
 
 # Register routes
+app.include_router(public_route)
 app.include_router(tenant_route)
 app.include_router(user_route)
 app.include_router(nurse_route)

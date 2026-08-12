@@ -17,22 +17,22 @@ class Patient(Base):
     date_of_birth = Column(String, nullable=True)
     gender = Column(String, nullable=True)
     address = Column(Text, nullable=True)
-    nin = Column(String, nullable=True, unique=True)    
+    nin = Column(String, nullable=True, unique=True)
 
     # ── MEDICAL INFO ──────────────────────────────────────────────
-    blood_group = Column(String, nullable=True)       # e.g. A+, O-
-    genotype = Column(String, nullable=True)           # e.g. AA, AS, SS
+    blood_group = Column(String, nullable=True)  # e.g. A+, O-
+    genotype = Column(String, nullable=True)  # e.g. AA, AS, SS
     allergies = Column(Text, nullable=True)
     medical_history = Column(Text, nullable=True)
     emergency_contact_name = Column(String, nullable=True)
     emergency_contact_phone = Column(String, nullable=True)
 
     # ── ACCOUNT ───────────────────────────────────────────────────
-    password = Column(String, nullable=True)           # set on registration
+    password = Column(String, nullable=True)  # set on registration
     is_active = Column(Boolean, default=True)
 
     # ── PAYMENT STATUS ────────────────────────────────────────────
     payment_status = Column(String, default="pending")  # pending | paid | overdue
 
     # ── REGISTRATION SOURCE ───────────────────────────────────────
-    registered_by = Column(String, default="self")     # self | admin
+    registered_by = Column(String, default="self")  # self | admin

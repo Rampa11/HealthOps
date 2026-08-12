@@ -29,6 +29,7 @@ def get_db():
 
 # ── REQUEST SCHEMAS ───────────────────────────────────────────────
 
+
 class PatientSelfRegister(BaseModel):
     full_name: str
     email: EmailStr
@@ -92,6 +93,7 @@ class ConsultationRequestCreate(BaseModel):
 
 # ── PUBLIC — PATIENT SELF REGISTRATION (no auth needed) ──────────
 
+
 @router.post("/register")
 def patient_self_register(data: PatientSelfRegister, db: Session = Depends(get_db)):
     existing = db.query(Patient).filter(Patient.email == data.email).first()
@@ -131,6 +133,7 @@ def patient_self_register(data: PatientSelfRegister, db: Session = Depends(get_d
 
 # ── PUBLIC — PATIENT LOGIN ────────────────────────────────────────
 
+
 @router.post("/login")
 def patient_login(data: PatientLogin, db: Session = Depends(get_db)):
     patient = db.query(Patient).filter(Patient.email == data.email).first()
@@ -141,11 +144,13 @@ def patient_login(data: PatientLogin, db: Session = Depends(get_db)):
     if not patient.is_active:
         raise HTTPException(status_code=403, detail="Account inactive")
 
-    token = create_access_token({
-        "patient_id": patient.id,
-        "role": "patient",
-        "tenant_id": patient.tenant_id or "guest",
-    })
+    token = create_access_token(
+        {
+            "patient_id": patient.id,
+            "role": "patient",
+            "tenant_id": patient.tenant_id or "guest",
+        }
+    )
 
     return {
         "access_token": token,
@@ -158,16 +163,19 @@ def patient_login(data: PatientLogin, db: Session = Depends(get_db)):
 
 # ── ADMIN — CREATE PATIENT ────────────────────────────────────────
 
+
 @router.post("/")
 def admin_create_patient(
     data: PatientAdminCreate,
     tenant=Depends(get_active_tenant),
     user=Depends(require_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     existing = db.query(Patient).filter(Patient.email == data.email).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Patient with this email already exists")
+        raise HTTPException(
+            status_code=400, detail="Patient with this email already exists"
+        )
 
     patient = Patient(
         tenant_id=tenant.id,
@@ -198,7 +206,7 @@ def admin_create_patient(
         user_id=user.get("user_id"),
         action="CREATE_PATIENT",
         entity="PATIENT",
-        entity_id=patient.id
+        entity_id=patient.id,
     )
 
     return patient
@@ -206,19 +214,19 @@ def admin_create_patient(
 
 # ── ADMIN — GET ALL PATIENTS ──────────────────────────────────────
 
+
 @router.get("/")
 def get_all_patients(
     tenant=Depends(get_active_tenant),
     user=Depends(require_staff),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    patients = db.query(Patient).filter(
-        Patient.tenant_id == tenant.id
-    ).all()
+    patients = db.query(Patient).filter(Patient.tenant_id == tenant.id).all()
     return patients
 
 
 # ── ADMIN — UPDATE PATIENT ────────────────────────────────────────
+
 
 @router.patch("/{patient_id}")
 def update_patient(
@@ -226,12 +234,13 @@ def update_patient(
     data: PatientUpdate,
     tenant=Depends(get_active_tenant),
     user=Depends(require_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    patient = db.query(Patient).filter(
-        Patient.id == patient_id,
-        Patient.tenant_id == tenant.id
-    ).first()
+    patient = (
+        db.query(Patient)
+        .filter(Patient.id == patient_id, Patient.tenant_id == tenant.id)
+        .first()
+    )
 
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
@@ -248,7 +257,7 @@ def update_patient(
         user_id=user.get("user_id"),
         action="UPDATE_PATIENT",
         entity="PATIENT",
-        entity_id=patient.id
+        entity_id=patient.id,
     )
 
     return patient
@@ -256,17 +265,17 @@ def update_patient(
 
 # ── PATIENT — VIEW OWN PROFILE ────────────────────────────────────
 
+
 @router.get("/me")
 def get_my_profile(
-    current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user=Depends(get_current_user), db: Session = Depends(get_db)
 ):
     if current_user.get("role") != "patient":
         raise HTTPException(status_code=403, detail="Patient access required")
 
-    patient = db.query(Patient).filter(
-        Patient.id == current_user.get("patient_id")
-    ).first()
+    patient = (
+        db.query(Patient).filter(Patient.id == current_user.get("patient_id")).first()
+    )
 
     if not patient:
         raise HTTPException(status_code=404, detail="Patient profile not found")
@@ -276,43 +285,42 @@ def get_my_profile(
 
 # ── PUBLIC — GET DOCTORS BY SPECIALIZATION ────────────────────────
 
+
 @router.get("/doctors/by-specialization")
-def get_doctors_by_specialization(
-    specialization: str,
-    db: Session = Depends(get_db)
-):
-    doctors = db.query(Doctor).filter(
-        Doctor.specialization == specialization
-    ).all()
+def get_doctors_by_specialization(specialization: str, db: Session = Depends(get_db)):
+    doctors = db.query(Doctor).filter(Doctor.specialization == specialization).all()
 
     result = []
     for d in doctors:
         user_obj = db.query(User).filter(User.id == d.user_id).first()
-        result.append({
-            "id": d.id,
-            "full_name": user_obj.full_name if user_obj else "Unknown",
-            "specialization": d.specialization,
-            "years_experience": d.years_experience,
-            "consultation_fee": d.consultation_fee,
-        })
+        result.append(
+            {
+                "id": d.id,
+                "full_name": user_obj.full_name if user_obj else "Unknown",
+                "specialization": d.specialization,
+                "years_experience": d.years_experience,
+                "consultation_fee": d.consultation_fee,
+            }
+        )
 
     return result
 
 
 # ── PATIENT — REQUEST CONSULTATION ───────────────────────────────
 
+
 @router.post("/consultation-request")
 def request_consultation(
     data: ConsultationRequestCreate,
     current_user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     if current_user.get("role") != "patient":
         raise HTTPException(status_code=403, detail="Patient access required")
 
-    patient = db.query(Patient).filter(
-        Patient.id == current_user.get("patient_id")
-    ).first()
+    patient = (
+        db.query(Patient).filter(Patient.id == current_user.get("patient_id")).first()
+    )
 
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
@@ -348,36 +356,42 @@ def request_consultation(
 
 # ── ADMIN — VIEW ALL CONSULTATION REQUESTS ────────────────────────
 
+
 @router.get("/consultation-requests/all")
 def get_all_consultation_requests(
     tenant=Depends(get_active_tenant),
     user=Depends(require_staff),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    requests = db.query(ConsultationRequest).filter(
-        ConsultationRequest.tenant_id == tenant.id
-    ).all()
+    requests = (
+        db.query(ConsultationRequest)
+        .filter(ConsultationRequest.tenant_id == tenant.id)
+        .all()
+    )
 
     result = []
     for r in requests:
         patient = db.query(Patient).filter(Patient.id == r.patient_id).first()
-        result.append({
-            "id": r.id,
-            "patient_name": patient.full_name if patient else "Unknown",
-            "patient_email": patient.email if patient else "",
-            "specialization": r.specialization,
-            "notes": r.notes,
-            "status": r.status,
-            "doctor_id": r.doctor_id,
-            "scheduled_date": r.scheduled_date,
-            "scheduled_time": r.scheduled_time,
-            "created_at": r.created_at,
-        })
+        result.append(
+            {
+                "id": r.id,
+                "patient_name": patient.full_name if patient else "Unknown",
+                "patient_email": patient.email if patient else "",
+                "specialization": r.specialization,
+                "notes": r.notes,
+                "status": r.status,
+                "doctor_id": r.doctor_id,
+                "scheduled_date": r.scheduled_date,
+                "scheduled_time": r.scheduled_time,
+                "created_at": r.created_at,
+            }
+        )
 
     return result
 
 
 # ── ADMIN — SCHEDULE A CONSULTATION REQUEST ───────────────────────
+
 
 @router.patch("/consultation-requests/{request_id}/schedule")
 def schedule_consultation(
@@ -387,12 +401,16 @@ def schedule_consultation(
     scheduled_time: str,
     tenant=Depends(get_active_tenant),
     user=Depends(require_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    req = db.query(ConsultationRequest).filter(
-        ConsultationRequest.id == request_id,
-        ConsultationRequest.tenant_id == tenant.id
-    ).first()
+    req = (
+        db.query(ConsultationRequest)
+        .filter(
+            ConsultationRequest.id == request_id,
+            ConsultationRequest.tenant_id == tenant.id,
+        )
+        .first()
+    )
 
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")

@@ -34,7 +34,7 @@ def create_doctor(
     consultation_fee: float = 0.0,
     tenant=Depends(get_active_tenant),
     user=Depends(require_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     if years_experience < 0:
         raise HTTPException(status_code=400, detail="Invalid experience value")
@@ -42,10 +42,9 @@ def create_doctor(
     if consultation_fee < 0:
         raise HTTPException(status_code=400, detail="Invalid consultation fee")
 
-    target_user = db.query(User).filter(
-        User.id == user_id,
-        User.tenant_id == tenant.id
-    ).first()
+    target_user = (
+        db.query(User).filter(User.id == user_id, User.tenant_id == tenant.id).first()
+    )
 
     if not target_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -53,10 +52,11 @@ def create_doctor(
     if target_user.role != "doctor":
         raise HTTPException(status_code=400, detail="User is not a doctor")
 
-    existing = db.query(Doctor).filter(
-        Doctor.user_id == user_id,
-        Doctor.tenant_id == tenant.id
-    ).first()
+    existing = (
+        db.query(Doctor)
+        .filter(Doctor.user_id == user_id, Doctor.tenant_id == tenant.id)
+        .first()
+    )
 
     if existing:
         raise HTTPException(status_code=400, detail="Doctor already exists")
@@ -66,7 +66,7 @@ def create_doctor(
         tenant_id=tenant.id,
         specialization=specialization,
         years_experience=years_experience,
-        consultation_fee=consultation_fee
+        consultation_fee=consultation_fee,
     )
 
     db.add(doctor)
@@ -79,7 +79,7 @@ def create_doctor(
         user_id=user.get("user_id"),
         action="CREATE_DOCTOR",
         entity="DOCTOR",
-        entity_id=doctor.id
+        entity_id=doctor.id,
     )
 
     return doctor
@@ -90,24 +90,24 @@ def create_doctor(
 def get_doctors(
     tenant=Depends(get_active_tenant),
     user=Depends(require_staff),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    doctors = db.query(Doctor).filter(
-        Doctor.tenant_id == tenant.id
-    ).all()
+    doctors = db.query(Doctor).filter(Doctor.tenant_id == tenant.id).all()
 
     result = []
 
     for d in doctors:
         user_obj = db.query(User).filter(User.id == d.user_id).first()
 
-        result.append({
-            "id": d.id,
-            "full_name": user_obj.full_name,
-            "specialization": d.specialization,
-            "years_experience": d.years_experience,
-            "consultation_fee": d.consultation_fee,
-        })
+        result.append(
+            {
+                "id": d.id,
+                "full_name": user_obj.full_name,
+                "specialization": d.specialization,
+                "years_experience": d.years_experience,
+                "consultation_fee": d.consultation_fee,
+            }
+        )
 
     return result
 
@@ -117,12 +117,13 @@ def get_doctors(
 def get_my_doctor_profile(
     tenant=Depends(get_active_tenant),
     user=Depends(require_doctor),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    doctor = db.query(Doctor).filter(
-        Doctor.user_id == user.get("user_id"),
-        Doctor.tenant_id == tenant.id
-    ).first()
+    doctor = (
+        db.query(Doctor)
+        .filter(Doctor.user_id == user.get("user_id"), Doctor.tenant_id == tenant.id)
+        .first()
+    )
 
     if not doctor:
         raise HTTPException(status_code=404, detail="Doctor profile not found")
@@ -136,15 +137,16 @@ def update_my_fee(
     data: FeeUpdate,
     tenant=Depends(get_active_tenant),
     user=Depends(require_doctor),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     if data.consultation_fee < 0:
         raise HTTPException(status_code=400, detail="Invalid consultation fee")
 
-    doctor = db.query(Doctor).filter(
-        Doctor.user_id == user.get("user_id"),
-        Doctor.tenant_id == tenant.id
-    ).first()
+    doctor = (
+        db.query(Doctor)
+        .filter(Doctor.user_id == user.get("user_id"), Doctor.tenant_id == tenant.id)
+        .first()
+    )
 
     if not doctor:
         raise HTTPException(status_code=404, detail="Doctor profile not found")
@@ -159,7 +161,7 @@ def update_my_fee(
         user_id=user.get("user_id"),
         action="UPDATE_DOCTOR_FEE",
         entity="DOCTOR",
-        entity_id=doctor.id
+        entity_id=doctor.id,
     )
 
     return doctor

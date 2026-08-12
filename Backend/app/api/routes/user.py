@@ -32,14 +32,15 @@ class UserCreate(BaseModel):
 @router.post("/")
 def create_user(
     data: UserCreate,
-    tenant=Depends(get_active_tenant),   # 🔐 REQUIRED
-    user=Depends(require_admin),         # 🔐 REQUIRED
-    db: Session = Depends(get_db)
+    tenant=Depends(get_active_tenant),  # 🔐 REQUIRED
+    user=Depends(require_admin),  # 🔐 REQUIRED
+    db: Session = Depends(get_db),
 ):
-    existing = db.query(User).filter(
-        User.email == data.email,
-        User.tenant_id == tenant.id
-    ).first()
+    existing = (
+        db.query(User)
+        .filter(User.email == data.email, User.tenant_id == tenant.id)
+        .first()
+    )
 
     if existing:
         raise HTTPException(status_code=400, detail="User already exists")
@@ -49,7 +50,7 @@ def create_user(
         full_name=data.full_name,
         email=data.email,
         password=hash_password(data.password),  # 🔥 IMPORTANT
-        role=data.role
+        role=data.role,
     )
 
     db.add(new_user)
@@ -64,8 +65,6 @@ def create_user(
 def get_users(
     tenant=Depends(get_active_tenant),
     user=Depends(require_staff),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    return db.query(User).filter(
-        User.tenant_id == tenant.id
-    ).all()
+    return db.query(User).filter(User.tenant_id == tenant.id).all()

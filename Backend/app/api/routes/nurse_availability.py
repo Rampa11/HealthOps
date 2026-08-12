@@ -28,24 +28,22 @@ def create_availability(
     end_time: datetime,
     tenant=Depends(get_active_tenant),
     user=Depends(require_staff),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     if end_time <= start_time:
         raise HTTPException(status_code=400, detail="Invalid time range")
 
-    nurse = db.query(Nurse).filter(
-        Nurse.id == nurse_id,
-        Nurse.tenant_id == tenant.id
-    ).first()
+    nurse = (
+        db.query(Nurse)
+        .filter(Nurse.id == nurse_id, Nurse.tenant_id == tenant.id)
+        .first()
+    )
 
     if not nurse:
         raise HTTPException(status_code=404, detail="Nurse not found")
 
     availability = NurseAvailability(
-        nurse_id=nurse_id,
-        tenant_id=tenant.id,
-        start_time=start_time,
-        end_time=end_time
+        nurse_id=nurse_id, tenant_id=tenant.id, start_time=start_time, end_time=end_time
     )
 
     db.add(availability)
@@ -58,7 +56,7 @@ def create_availability(
         user_id=user.get("user_id"),
         action="CREATE_AVAILABILITY",
         entity="AVAILABILITY",
-        entity_id=availability.id
+        entity_id=availability.id,
     )
 
     return availability
@@ -69,11 +67,13 @@ def create_availability(
 def get_availability(
     tenant=Depends(get_active_tenant),
     user=Depends(require_staff),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    return db.query(NurseAvailability).filter(
-        NurseAvailability.tenant_id == tenant.id
-    ).all()
+    return (
+        db.query(NurseAvailability)
+        .filter(NurseAvailability.tenant_id == tenant.id)
+        .all()
+    )
 
 
 # 🟢 NURSE — VIEW OWN AVAILABILITY
@@ -81,17 +81,22 @@ def get_availability(
 def get_my_availability(
     tenant=Depends(get_active_tenant),
     user=Depends(require_nurse),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    nurse = db.query(Nurse).filter(
-        Nurse.user_id == user.get("user_id"),
-        Nurse.tenant_id == tenant.id
-    ).first()
+    nurse = (
+        db.query(Nurse)
+        .filter(Nurse.user_id == user.get("user_id"), Nurse.tenant_id == tenant.id)
+        .first()
+    )
 
     if not nurse:
         raise HTTPException(status_code=404, detail="Nurse not found")
 
-    return db.query(NurseAvailability).filter(
-        NurseAvailability.nurse_id == nurse.id,
-        NurseAvailability.tenant_id == tenant.id
-    ).all()
+    return (
+        db.query(NurseAvailability)
+        .filter(
+            NurseAvailability.nurse_id == nurse.id,
+            NurseAvailability.tenant_id == tenant.id,
+        )
+        .all()
+    )

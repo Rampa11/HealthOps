@@ -14,11 +14,13 @@ from app.api.deps import get_active_tenant
 from app.api.deps_roles import require_staff, require_nurse, require_admin
 from app.utils.audit import log_action
 
+
 class AssignmentCreate(BaseModel):
     nurse_id: str
     patient_name: str
     start_time: datetime
     end_time: datetime
+
 
 router = APIRouter(prefix="/assignments", tags=["Assignments"])
 
@@ -37,12 +39,13 @@ def update_assignment(
     data: dict,
     tenant=Depends(get_active_tenant),
     user=Depends(require_staff),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    assignment = db.query(Assignment).filter(
-        Assignment.id == assignment_id,
-        Assignment.tenant_id == tenant.id
-    ).first()
+    assignment = (
+        db.query(Assignment)
+        .filter(Assignment.id == assignment_id, Assignment.tenant_id == tenant.id)
+        .first()
+    )
 
     if not assignment:
         raise HTTPException(status_code=404, detail="Assignment not found")
@@ -56,12 +59,13 @@ def update_assignment(
 
     return assignment
 
+
 # 🔴 STAFF + ADMIN — CREATE ASSIGNMENT
 @router.post("/")
 def create_assignment(
     data: AssignmentCreate,
     tenant=Depends(get_active_tenant),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     try:
         assignment = Assignment(
@@ -69,7 +73,7 @@ def create_assignment(
             tenant_id=tenant.id,
             patient_name=data.patient_name,
             start_time=data.start_time,
-            end_time=data.end_time
+            end_time=data.end_time,
         )
 
         db.add(assignment)
@@ -88,11 +92,9 @@ def create_assignment(
 def get_assignments(
     tenant=Depends(get_active_tenant),
     user=Depends(require_staff),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    assignments = db.query(Assignment).filter(
-        Assignment.tenant_id == tenant.id
-    ).all()
+    assignments = db.query(Assignment).filter(Assignment.tenant_id == tenant.id).all()
 
     result = []
 
@@ -103,14 +105,16 @@ def get_assignments(
         if nurse:
             user_obj = db.query(User).filter(User.id == nurse.user_id).first()
 
-        result.append({
-            "id": a.id,
-            "patient_name": a.patient_name,
-            "start_time": a.start_time,
-            "end_time": a.end_time,
-            "nurse_name": user_obj.full_name if user_obj else "Unknown", 
-            "nurse_id": a.nurse_id
-        })
+        result.append(
+            {
+                "id": a.id,
+                "patient_name": a.patient_name,
+                "start_time": a.start_time,
+                "end_time": a.end_time,
+                "nurse_name": user_obj.full_name if user_obj else "Unknown",
+                "nurse_id": a.nurse_id,
+            }
+        )
 
     return result
 
@@ -120,20 +124,22 @@ def get_assignments(
 def get_my_assignments(
     tenant=Depends(get_active_tenant),
     user=Depends(require_nurse),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    nurse = db.query(Nurse).filter(
-        Nurse.user_id == user.get("user_id"),
-        Nurse.tenant_id == tenant.id
-    ).first()
+    nurse = (
+        db.query(Nurse)
+        .filter(Nurse.user_id == user.get("user_id"), Nurse.tenant_id == tenant.id)
+        .first()
+    )
 
     if not nurse:
         raise HTTPException(status_code=404, detail="Nurse not found")
 
-    return db.query(Assignment).filter(
-        Assignment.nurse_id == nurse.id,
-        Assignment.tenant_id == tenant.id
-    ).all()
+    return (
+        db.query(Assignment)
+        .filter(Assignment.nurse_id == nurse.id, Assignment.tenant_id == tenant.id)
+        .all()
+    )
 
 
 # 🟢 NURSE — CLOCK IN
@@ -142,21 +148,26 @@ def clock_in(
     assignment_id: str,
     tenant=Depends(get_active_tenant),
     user=Depends(require_nurse),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    nurse = db.query(Nurse).filter(
-        Nurse.user_id == user.get("user_id"),
-        Nurse.tenant_id == tenant.id
-    ).first()
+    nurse = (
+        db.query(Nurse)
+        .filter(Nurse.user_id == user.get("user_id"), Nurse.tenant_id == tenant.id)
+        .first()
+    )
 
     if not nurse:
         raise HTTPException(status_code=404, detail="Nurse not found")
 
-    assignment = db.query(Assignment).filter(
-        Assignment.id == assignment_id,
-        Assignment.nurse_id == nurse.id,
-        Assignment.tenant_id == tenant.id
-    ).first()
+    assignment = (
+        db.query(Assignment)
+        .filter(
+            Assignment.id == assignment_id,
+            Assignment.nurse_id == nurse.id,
+            Assignment.tenant_id == tenant.id,
+        )
+        .first()
+    )
 
     if not assignment:
         raise HTTPException(status_code=403, detail="Not your assignment")
@@ -176,7 +187,7 @@ def clock_in(
         user_id=user.get("user_id"),
         action="CLOCK_IN",
         entity="ASSIGNMENT",
-        entity_id=assignment.id
+        entity_id=assignment.id,
     )
 
     return assignment
@@ -188,21 +199,26 @@ def clock_out(
     assignment_id: str,
     tenant=Depends(get_active_tenant),
     user=Depends(require_nurse),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    nurse = db.query(Nurse).filter(
-        Nurse.user_id == user.get("user_id"),
-        Nurse.tenant_id == tenant.id
-    ).first()
+    nurse = (
+        db.query(Nurse)
+        .filter(Nurse.user_id == user.get("user_id"), Nurse.tenant_id == tenant.id)
+        .first()
+    )
 
     if not nurse:
         raise HTTPException(status_code=404, detail="Nurse not found")
 
-    assignment = db.query(Assignment).filter(
-        Assignment.id == assignment_id,
-        Assignment.nurse_id == nurse.id,
-        Assignment.tenant_id == tenant.id
-    ).first()
+    assignment = (
+        db.query(Assignment)
+        .filter(
+            Assignment.id == assignment_id,
+            Assignment.nurse_id == nurse.id,
+            Assignment.tenant_id == tenant.id,
+        )
+        .first()
+    )
 
     if not assignment:
         raise HTTPException(status_code=403, detail="Not your assignment")
@@ -216,15 +232,13 @@ def clock_out(
     assignment.clock_out_time = datetime.utcnow()
     assignment.is_completed = True
 
-    duration = (assignment.clock_out_time - assignment.clock_in_time).total_seconds() / 3600
+    duration = (
+        assignment.clock_out_time - assignment.clock_in_time
+    ).total_seconds() / 3600
 
     amount = duration * 25.0
 
-    billing = Billing(
-        assignment_id=assignment.id,
-        tenant_id=tenant.id,
-        amount=amount
-    )
+    billing = Billing(assignment_id=assignment.id, tenant_id=tenant.id, amount=amount)
 
     db.add(billing)
     db.commit()
@@ -237,13 +251,10 @@ def clock_out(
         user_id=user.get("user_id"),
         action="CLOCK_OUT",
         entity="ASSIGNMENT",
-        entity_id=assignment.id
+        entity_id=assignment.id,
     )
 
-    return {
-        "assignment": assignment,
-        "billing": billing
-    }
+    return {"assignment": assignment, "billing": billing}
 
 
 # 🔴 ADMIN — REPORTS
@@ -251,33 +262,31 @@ def clock_out(
 def shift_summary(
     tenant=Depends(get_active_tenant),
     user=Depends(require_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    total_shifts = db.query(Assignment).filter(
-        Assignment.tenant_id == tenant.id
-    ).count()
+    total_shifts = (
+        db.query(Assignment).filter(Assignment.tenant_id == tenant.id).count()
+    )
 
-    completed_shifts = db.query(Assignment).filter(
-        Assignment.tenant_id == tenant.id,
-        Assignment.is_completed == True
-    ).count()
+    completed_shifts = (
+        db.query(Assignment)
+        .filter(Assignment.tenant_id == tenant.id, Assignment.is_completed == True)
+        .count()
+    )
 
-    return {
-        "total_shifts": total_shifts,
-        "completed_shifts": completed_shifts
-    }
+    return {"total_shifts": total_shifts, "completed_shifts": completed_shifts}
 
 
 @router.get("/reports/revenue")
 def revenue_report(
     tenant=Depends(get_active_tenant),
     user=Depends(require_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    total_revenue = db.query(func.sum(Billing.amount)).filter(
-        Billing.tenant_id == tenant.id
-    ).scalar()
+    total_revenue = (
+        db.query(func.sum(Billing.amount))
+        .filter(Billing.tenant_id == tenant.id)
+        .scalar()
+    )
 
-    return {
-        "total_revenue": total_revenue or 0
-    }
+    return {"total_revenue": total_revenue or 0}

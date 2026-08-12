@@ -27,17 +27,16 @@ def create_nurse(
     years_experience: int,
     tenant=Depends(get_active_tenant),
     user=Depends(require_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     # ✅ VALIDATE EXPERIENCE
     if years_experience < 0:
         raise HTTPException(status_code=400, detail="Invalid experience value")
 
     # ✅ VALIDATE USER EXISTS AND BELONGS TO TENANT
-    target_user = db.query(User).filter(
-        User.id == user_id,
-        User.tenant_id == tenant.id
-    ).first()
+    target_user = (
+        db.query(User).filter(User.id == user_id, User.tenant_id == tenant.id).first()
+    )
 
     if not target_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -46,10 +45,11 @@ def create_nurse(
         raise HTTPException(status_code=400, detail="User is not a nurse")
 
     # ✅ PREVENT DUPLICATE NURSE PROFILE
-    existing = db.query(Nurse).filter(
-        Nurse.user_id == user_id,
-        Nurse.tenant_id == tenant.id
-    ).first()
+    existing = (
+        db.query(Nurse)
+        .filter(Nurse.user_id == user_id, Nurse.tenant_id == tenant.id)
+        .first()
+    )
 
     if existing:
         raise HTTPException(status_code=400, detail="Nurse already exists")
@@ -58,7 +58,7 @@ def create_nurse(
         user_id=user_id,
         tenant_id=tenant.id,
         specialization=specialization,
-        years_experience=years_experience
+        years_experience=years_experience,
     )
 
     db.add(nurse)
@@ -72,7 +72,7 @@ def create_nurse(
         user_id=user.get("user_id"),
         action="CREATE_NURSE",
         entity="NURSE",
-        entity_id=nurse.id
+        entity_id=nurse.id,
     )
 
     return nurse
@@ -83,22 +83,22 @@ def create_nurse(
 def get_nurses(
     tenant=Depends(get_active_tenant),
     user=Depends(require_staff),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    nurses = db.query(Nurse).filter(
-        Nurse.tenant_id == tenant.id
-    ).all()
+    nurses = db.query(Nurse).filter(Nurse.tenant_id == tenant.id).all()
 
     result = []
 
     for n in nurses:
         user_obj = db.query(User).filter(User.id == n.user_id).first()
 
-        result.append({
-            "id": n.id,
-            "full_name": user_obj.full_name,   # 🔥 ADD THIS
-            "specialization": n.specialization
-        })
+        result.append(
+            {
+                "id": n.id,
+                "full_name": user_obj.full_name,  # 🔥 ADD THIS
+                "specialization": n.specialization,
+            }
+        )
 
     return result
 
@@ -108,12 +108,13 @@ def get_nurses(
 def get_my_nurse_profile(
     tenant=Depends(get_active_tenant),
     user=Depends(require_nurse),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    nurse = db.query(Nurse).filter(
-        Nurse.user_id == user.get("user_id"),
-        Nurse.tenant_id == tenant.id
-    ).first()
+    nurse = (
+        db.query(Nurse)
+        .filter(Nurse.user_id == user.get("user_id"), Nurse.tenant_id == tenant.id)
+        .first()
+    )
 
     if not nurse:
         raise HTTPException(status_code=404, detail="Nurse profile not found")

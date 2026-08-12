@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 * {
   margin: 0;
   padding: 0;
@@ -14,7 +16,15 @@ body,
 }
 
 body {
-  background: #111827;
-  color: white;
+  background: #f8fafc;
+  color: #111827;
   font-family: Inter, system-ui, sans-serif;
+  transition:
+    background-color .3s ease,
+    color .3s ease;
+}
+
+.dark body {
+  background: #0f172a;
+  color: #f8fafc;
 }

@@ -12,12 +12,14 @@ class ConsultationRequest(Base):
 
     # ── WHO ───────────────────────────────────────────────────────
     patient_id = Column(String, nullable=False)
-    doctor_id = Column(String, nullable=True)      # set when doctor is selected
-    specialization = Column(String, nullable=False) # what the patient needs
+    doctor_id = Column(String, nullable=True)  # set when doctor is selected
+    specialization = Column(String, nullable=False)  # what the patient needs
 
     # ── DETAILS ───────────────────────────────────────────────────
-    notes = Column(Text, nullable=True)            # patient's description of issue
-    status = Column(String, default="pending")     # pending | scheduled | completed | cancelled
+    notes = Column(Text, nullable=True)  # patient's description of issue
+    status = Column(
+        String, default="pending"
+    )  # pending | scheduled | completed | cancelled
 
     # ── SCHEDULING ────────────────────────────────────────────────
     scheduled_date = Column(String, nullable=True)

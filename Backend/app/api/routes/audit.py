@@ -25,16 +25,12 @@ def get_logs(
     action: str = None,
     tenant=Depends(get_active_tenant),
     user=Depends(require_admin),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    query = db.query(AuditLog).filter(
-        AuditLog.tenant_id == tenant.id
-    )
+    query = db.query(AuditLog).filter(AuditLog.tenant_id == tenant.id)
 
     # 🔍 OPTIONAL FILTER
     if action:
         query = query.filter(AuditLog.action == action)
 
-    return query.order_by(
-        AuditLog.timestamp.desc()
-    ).offset(offset).limit(limit).all()
+    return query.order_by(AuditLog.timestamp.desc()).offset(offset).limit(limit).all()

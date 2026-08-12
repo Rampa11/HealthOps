@@ -2,6 +2,7 @@ from sqlalchemy import Column, String, Boolean, ForeignKey
 from app.db.base import Base
 import uuid
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -12,7 +13,7 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     phone = Column(String)
 
-    password = Column(String, nullable=False)  
+    password = Column(String, nullable=False)
 
     role = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
