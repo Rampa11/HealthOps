@@ -34,7 +34,7 @@ export default function Login({ setToken }: LoginProps) {
 
         try {
             const response = await axios.post<LoginResponse>(
-                "http://127.0.0.1:8000/auth/login",
+                "/auth/login",
                 {
                     email,
                     password,

@@ -28,7 +28,7 @@ interface Doctor {
     verified?: boolean;
 }
 
-const API = "http://127.0.0.1:8000";
+const API = "";
 
 export default function DoctorsDirectory() {
     const [doctors, setDoctors] = useState<Doctor[]>([]);

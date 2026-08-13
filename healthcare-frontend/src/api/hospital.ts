@@ -1,10 +1,9 @@
 import axios from "axios";
 import type { Tenant } from "../types/tenant";
 
-const API = "http://127.0.0.1:8000";
+const API = "";
 
 export async function getHospitals(): Promise<Tenant[]> {
-
     const response = await axios.get(
         `${API}/api/public/hospitals`
     );
@@ -15,7 +14,6 @@ export async function getHospitals(): Promise<Tenant[]> {
 export async function getHospital(
     slug: string
 ): Promise<Tenant> {
-
     const response = await axios.get(
         `${API}/api/public/tenant/${slug}`
     );

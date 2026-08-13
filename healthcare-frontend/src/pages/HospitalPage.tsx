@@ -41,7 +41,7 @@ export default function HospitalPage() {
         if (!slug) return;
 
         axios
-            .get(`http://127.0.0.1:8000/api/public/tenant/${slug}`)
+            .get(`/api/public/tenant/${slug}`)
             .then((res) => {
                 setHospital(res.data);
                 setLoading(false);

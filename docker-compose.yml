@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:17
+    container_name: healthopz-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: healthcare_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: healthopz-backend
+    env_file:
+      - ./Backend/.env
+    depends_on:
+      - db
+    restart: unless-stopped
+    expose:
+      - "8000"
+
+  frontend:
+    build:
+      context: ./healthcare-frontend
+      dockerfile: Dockerfile
+    container_name: healthopz-frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
