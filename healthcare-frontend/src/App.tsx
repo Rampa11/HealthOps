@@ -44,6 +44,7 @@ import AdminPatients from "./pages/AdminPatients.jsx";
 import PatientRegister from "./pages/PatientRegister.jsx";
 import PatientLogin from "./pages/PatientLogin.jsx";
 import PatientDashboard from "./pages/PatientDashboard.jsx";
+import Appointments from "./pages/Appointments";
 
 
 function App() {
@@ -212,7 +213,10 @@ function App() {
               : <PatientLogin setPatientToken={setPatientToken} />
           }
         />
-
+        <Route
+          path="/appointments"
+          element={<Appointments />}
+        />
         {/* ── STAFF ROUTES (requires staff login) ── */}
         <Route
           path="/*"

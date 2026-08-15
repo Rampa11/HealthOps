@@ -15,9 +15,9 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
         if (
-            not payload.get("user_id")
-            or not payload.get("tenant_id")
+            not payload.get("tenant_id")
             or not payload.get("role")
+            or not payload.get("user_id") and not payload.get("patient_id")
         ):
             raise HTTPException(status_code=401, detail="Invalid token payload")
 

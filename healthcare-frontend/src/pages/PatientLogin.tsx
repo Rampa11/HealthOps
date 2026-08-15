@@ -1,13 +1,14 @@
 // src/pages/PatientLogin.jsx
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import api from "../api";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import api from "../api.js";
 
 function PatientLogin({ setPatientToken }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -18,7 +19,7 @@ function PatientLogin({ setPatientToken }) {
       localStorage.setItem("patient_name", res.data.full_name);
       localStorage.setItem("patient_id", res.data.patient_id);
       setPatientToken(res.data.access_token);
-      navigate("/patient-dashboard");
+      navigate(location.state?.from || "/patient-dashboard");
     } catch (err) {
       alert(err.response?.data?.detail || "Login failed ❌");
     } finally {
