@@ -44,7 +44,7 @@ const business = [
 export default function MegaMenu({ open, onClose }: Props) {
     const location = useLocation();
 
-    // Auto-close menu whenever the route changes
+    // Close menu whenever the route changes
     useEffect(() => {
         if (open) {
             onClose();
@@ -65,7 +65,6 @@ export default function MegaMenu({ open, onClose }: Props) {
                             <Link
                                 key={item.title}
                                 to={item.path}
-                                onClick={onClose}
                                 className="flex items-start gap-4 rounded-xl p-4 transition hover:bg-gray-100"
                             >
                                 <div className="rounded-lg bg-teal-100 p-3 text-teal-700">{item.icon}</div>
@@ -86,7 +85,6 @@ export default function MegaMenu({ open, onClose }: Props) {
                             <Link
                                 key={item.title}
                                 to={item.path}
-                                onClick={onClose}
                                 className="block rounded-lg p-3 hover:bg-blue-50"
                             >
                                 {item.title}
@@ -104,7 +102,6 @@ export default function MegaMenu({ open, onClose }: Props) {
                         </p>
                         <Link
                             to="/hospital-onboarding"
-                            onClick={onClose}
                             className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-semibold text-teal-700"
                         >
                             Get Started
@@ -116,7 +113,6 @@ export default function MegaMenu({ open, onClose }: Props) {
                                 <Link
                                     key={item.title}
                                     to={item.path}
-                                    onClick={onClose}
                                     className="block hover:text-teal-100"
                                 >
                                     {item.title}
