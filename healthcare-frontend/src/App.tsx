@@ -28,6 +28,7 @@ import LaboratoriesOnboardingReview from "./pages/LaboratoriesOnboardingReview";
 import LaboratoryOnboardingPayment from "./pages/LaboratoryOnboardingPayment";
 import AppShell from "./layouts/AppShell";
 import HospitalLogin from "./pages/HospitalLogin";
+import Pricing from "./pages/Pricing";
 
 import PatientRegister from "./pages/PatientRegister.jsx";
 import PatientLogin from "./pages/PatientLogin.jsx";
@@ -71,6 +72,8 @@ function App() {
           <Route path="/traditional-medicine" element={<TraditionalMedicine />} />
           <Route path="/traditional-medicine-onboarding" element={<TraditionalMedicineOnboarding />} />
           <Route path="/traditional-medicine-onboarding/review" element={<TraditionalMedicineOnboardingReview />} />
+
+          <Route path="/pricing" element={<Pricing />} />
 
           <Route path="/get-started" element={<GetStarted />} />
           <Route path="/hospital-login" element={<HospitalLogin />} />
