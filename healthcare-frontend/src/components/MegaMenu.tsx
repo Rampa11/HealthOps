@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import {
     Building2,
     Stethoscope,
@@ -17,42 +18,12 @@ type Props = {
 };
 
 const providers = [
-    {
-        icon: <Building2 size={22} />,
-        title: "Hospitals",
-        desc: "Hospitals, Clinics & Diagnostic Centres",
-        path: "/hospitals",
-    },
-    {
-        icon: <Stethoscope size={22} />,
-        title: "Doctors",
-        desc: "Consult verified doctors",
-        path: "/doctors",
-    },
-    {
-        icon: <HeartPulse size={22} />,
-        title: "Nurses",
-        desc: "Find home-care nurses",
-        path: "/nurses",
-    },
-    {
-        icon: <Leaf size={22} />,
-        title: "Traditional Medicine",
-        desc: "Licensed practitioners",
-        path: "/traditional-medicine",
-    },
-    {
-        icon: <Pill size={22} />,
-        title: "Pharmacy",
-        desc: "Order medicines",
-        path: "/pharmacy",
-    },
-    {
-        icon: <FlaskConical size={22} />,
-        title: "Laboratories",
-        desc: "Book medical tests",
-        path: "/laboratories",
-    },
+    { icon: <Building2 size={22} />, title: "Hospitals", desc: "Hospitals, Clinics & Diagnostic Centres", path: "/hospitals" },
+    { icon: <Stethoscope size={22} />, title: "Doctors", desc: "Consult verified doctors", path: "/doctors" },
+    { icon: <HeartPulse size={22} />, title: "Nurses", desc: "Find home-care nurses", path: "/nurses" },
+    { icon: <Leaf size={22} />, title: "Traditional Medicine", desc: "Licensed practitioners", path: "/traditional-medicine" },
+    { icon: <Pill size={22} />, title: "Pharmacy", desc: "Order medicines", path: "/pharmacy" },
+    { icon: <FlaskConical size={22} />, title: "Laboratories", desc: "Book medical tests", path: "/laboratories" },
 ];
 
 const patients = [
@@ -71,11 +42,21 @@ const business = [
 ];
 
 export default function MegaMenu({ open, onClose }: Props) {
+    const location = useLocation();
+
+    // Auto-close menu whenever the route changes
+    useEffect(() => {
+        if (open) {
+            onClose();
+        }
+    }, [location]);
+
     if (!open) return null;
 
     return (
         <div className="absolute left-0 top-full w-full border-t bg-white shadow-2xl">
             <div className="mx-auto grid max-w-7xl grid-cols-12 gap-10 px-10 py-10">
+
                 {/* PROVIDERS */}
                 <div className="col-span-5">
                     <h2 className="mb-6 text-xl font-bold text-teal-700">Healthcare Providers</h2>
@@ -144,6 +125,7 @@ export default function MegaMenu({ open, onClose }: Props) {
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     );
