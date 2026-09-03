@@ -29,6 +29,17 @@ import LaboratoryOnboardingPayment from "./pages/LaboratoryOnboardingPayment";
 import AppShell from "./layouts/AppShell";
 import HospitalLogin from "./pages/HospitalLogin";
 import Pricing from "./pages/Pricing";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import HospitalAdmin from "./pages/HospitalAdmin";
+import AdminPatients from "./pages/AdminPatients";
+import Doctors from "./pages/Doctors";
+import Nurses from "./pages/Nurses";
+import Accounts from "./pages/Accounts";
+import HRM from "./pages/HRM";
+import Scheduling from "./pages/Scheduling";
+import AuditLogs from "./pages/AuditLogs";
+
 
 import PatientRegister from "./pages/PatientRegister.jsx";
 import PatientLogin from "./pages/PatientLogin.jsx";
@@ -74,6 +85,8 @@ function App() {
           <Route path="/traditional-medicine-onboarding/review" element={<TraditionalMedicineOnboardingReview />} />
 
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
 
           <Route path="/get-started" element={<GetStarted />} />
           <Route path="/hospital-login" element={<HospitalLogin />} />
@@ -92,9 +105,15 @@ function App() {
           <Route path="/appointments" element={<Appointments />} />
         </Route>
 
-        {/* Note: Staff/Admin dashboard logic removed from public routes.
-            In tenant-based setup, staff/admin routes should live under hospital tenant context,
-            not global App.tsx. */}
+        {/* Registered-hospital tenant workspace: intentionally outside the public AppShell. */}
+        <Route path="/hospital/admin" element={<HospitalAdmin />} />
+        <Route path="/hospital/patients" element={<AdminPatients />} />
+        <Route path="/hospital/doctors" element={<Doctors />} />
+        <Route path="/hospital/nurses" element={<Nurses />} />
+        <Route path="/hospital/accounts" element={<Accounts />} />
+        <Route path="/hospital/hrm" element={<HRM />} />
+        <Route path="/hospital/scheduling" element={<Scheduling />} />
+        <Route path="/hospital/audit-logs" element={<AuditLogs />} />
       </Routes>
     </Router>
   );

@@ -1,8 +1,8 @@
 // src/pages/AdminPatients.jsx
 import { useEffect, useState } from "react";
-import api from "../api";
-import Sidebar from "../components/Sidebar";
-import TopNav from "../components/TopNav";
+import api from "../api.js";
+import Sidebar from "../components/Sidebar.js";
+import TopNav from "../components/TopNav.js";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const GENOTYPES = ["AA", "AS", "SS", "AC", "SC"];

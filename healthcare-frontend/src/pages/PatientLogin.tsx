@@ -74,6 +74,7 @@ function PatientLogin({ setPatientToken }) {
                 {loading ? "Logging in..." : "Login to Patient Portal"}
               </button>
             </form>
+          <p className="mt-6 text-center text-sm text-slate-600">New to HealthOpz? <Link to="/register" className="font-semibold text-teal-700 hover:underline">Create a Public Patient account</Link></p>
 
             <div className="mt-4 pt-4 border-t border-[#1e3a5f] text-center">
               <p className="text-gray-500 text-xs">

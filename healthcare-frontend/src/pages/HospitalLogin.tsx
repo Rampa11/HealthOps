@@ -41,7 +41,7 @@ export default function HospitalLogin() {
                 response.role
             );
 
-            navigate("/dashboard");
+            navigate("/hospital/admin");
 
         } catch (err: any) {
 

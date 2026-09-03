@@ -12,6 +12,7 @@ from app.models import (
     doctor,
     patient,
     consultation_request,
+    medical_charge,
 )
 
 # Routes
@@ -28,6 +29,7 @@ from app.api.routes.auth import router as auth_route
 from app.api.routes.audit import router as audit_route
 from app.api.routes.doctor import router as doctor_route
 from app.api.routes.patient import router as patient_route
+from app.api.routes.accounts import router as accounts_route
 
 app = FastAPI(title="Healthcare Operations System")
 
@@ -69,3 +71,4 @@ app.include_router(auth_route)
 app.include_router(audit_route)
 app.include_router(doctor_route)
 app.include_router(patient_route)
+app.include_router(accounts_route)

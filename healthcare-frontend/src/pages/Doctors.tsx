@@ -1,8 +1,8 @@
 // src/pages/Doctors.jsx
 import { useEffect, useState } from "react";
-import api from "../api";
-import Sidebar from "../components/Sidebar";
-import TopNav from "../components/TopNav";
+import api from "../api.js";
+import Sidebar from "../components/Sidebar.jsx";
+import TopNav from "../components/TopNav.jsx";
 
 const SPECIALIZATIONS = [
   "General Practice",

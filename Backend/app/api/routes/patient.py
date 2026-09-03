@@ -9,7 +9,9 @@ from app.db.session import SessionLocal
 from app.models.patient import Patient
 from app.models.doctor import Doctor
 from app.models.user import User
+from app.models.tenant import Tenant
 from app.models.consultation_request import ConsultationRequest
+from app.models.medical_charge import MedicalCharge
 from app.api.deps import get_active_tenant
 from app.api.deps_roles import require_admin, require_staff, get_current_user
 from app.core.hash import hash_password, verify_password
@@ -34,6 +36,7 @@ class PatientSelfRegister(BaseModel):
     full_name: str
     email: EmailStr
     password: str
+    hospital_slug: Optional[str] = None  # optional: joins a registered hospital; blank = Public Patient
     phone: Optional[str] = None
     date_of_birth: Optional[str] = None
     gender: Optional[str] = None
@@ -100,7 +103,15 @@ def patient_self_register(data: PatientSelfRegister, db: Session = Depends(get_d
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    tenant_id = None
+    if data.hospital_slug:
+        hospital = db.query(Tenant).filter(Tenant.slug == data.hospital_slug).first()
+        if not hospital:
+            raise HTTPException(status_code=404, detail="Hospital code not found")
+        tenant_id = hospital.id
+
     patient = Patient(
+        tenant_id=tenant_id,
         full_name=data.full_name,
         email=data.email,
         password=hash_password(data.password),
@@ -419,6 +430,22 @@ def schedule_consultation(
     req.scheduled_date = scheduled_date
     req.scheduled_time = scheduled_time
     req.status = "scheduled"
+
+    # Accounts alert: scheduling a doctor creates the doctor's fixed consultation charge.
+    doctor = db.query(Doctor).filter(Doctor.id == doctor_id, Doctor.tenant_id == tenant.id).first()
+    if not doctor:
+        raise HTTPException(status_code=404, detail="Doctor not found")
+    existing_charge = db.query(MedicalCharge).filter(
+        MedicalCharge.consultation_request_id == req.id,
+        MedicalCharge.charge_type == "consultation",
+    ).first()
+    if not existing_charge:
+        db.add(MedicalCharge(
+            tenant_id=tenant.id, patient_id=req.patient_id, doctor_id=doctor.id,
+            consultation_request_id=req.id, charge_type="consultation",
+            description="Doctor consultation", amount=doctor.consultation_fee,
+            status="pending", created_by=user.get("user_id")
+        ))
 
     db.commit()
     db.refresh(req)

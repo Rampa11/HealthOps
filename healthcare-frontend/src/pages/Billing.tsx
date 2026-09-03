@@ -1,7 +1,7 @@
 // src/pages/Billing.jsx
 import { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import TopNav from "../components/TopNav";
+import Sidebar from "../components/Sidebar.js";
+import TopNav from "../components/TopNav.js";
 
 const MOCK_INVOICES = [
   { id: "INV-001", patient: "John Doe", nurse: "Nurse Joy", amount: 200, status: "Paid", date: "2026-06-01" },

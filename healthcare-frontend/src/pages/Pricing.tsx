@@ -153,6 +153,10 @@ export default function Pricing() {
 
                 <div className="mx-auto max-w-7xl">
 
+                    <div className="mb-10 rounded-2xl border border-teal-100 bg-teal-50 p-5 text-center text-sm text-teal-900">
+                        <strong>Flexible payment:</strong> HealthOpz supports both Paystack and Stripe so subscribers can choose the payment provider that is most convenient for them. Payment credentials are configured securely on the server.
+                    </div>
+
                     <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
 
                         {plans.map((plan) => {

@@ -1,11 +1,11 @@
 // src/pages/Nurses.jsx
 import { useEffect, useState } from "react";
-import api from "../api";
+import api from "../api.js";
 
-import Sidebar from "../components/Sidebar";
-import TopNav from "../components/TopNav";
-import NurseCards from "../components/NurseCards";
-import StatsCards from "../components/StatsCards";
+import Sidebar from "../components/Sidebar.js";
+import TopNav from "../components/TopNav.js";
+import NurseCards from "../components/NurseCards.js";
+import StatsCards from "../components/StatsCards.js";
 
 function Nurses({ setToken }) {
   const [nurses, setNurses] = useState([]);

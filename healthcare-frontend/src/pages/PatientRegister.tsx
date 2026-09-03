@@ -18,6 +18,7 @@ function PatientRegister() {
     email: "",
     password: "",
     confirmPassword: "",
+    hospital_slug: "",
     phone: "",
     date_of_birth: "",
     gender: "",

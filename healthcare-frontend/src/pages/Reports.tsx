@@ -1,10 +1,10 @@
 // src/pages/Reports.jsx
 import { useEffect, useState } from "react";
-import api from "../api";
+import api from "../api.js";
 
-import Sidebar from "../components/Sidebar";
-import TopNav from "../components/TopNav";
-import StatsCards from "../components/StatsCards";
+import Sidebar from "../components/Sidebar.js";
+import TopNav from "../components/TopNav.js";
+import StatsCards from "../components/StatsCards.js";
 
 function Reports({ setToken }) {
   const [assignments, setAssignments] = useState([]);

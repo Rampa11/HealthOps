@@ -1,7 +1,7 @@
 // src/pages/PatientDashboard.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api";
+import api from "../api.js";
 
 // ── PUZZLE BANK ──────────────────────────────────────────────────
 const PUZZLE_BANK = [

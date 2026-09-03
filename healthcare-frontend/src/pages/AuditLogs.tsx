@@ -1,9 +1,9 @@
 // src/pages/AuditLogs.jsx
 import { useEffect, useState } from "react";
-import api from "../api";
+import api from "../api.js";
 
-import Sidebar from "../components/Sidebar";
-import TopNav from "../components/TopNav";
+import Sidebar from "../components/Sidebar.js";
+import TopNav from "../components/TopNav.js";
 
 const ACTION_STYLES = {
   CREATE_NURSE: "bg-green-900/40 text-green-400 border-green-700/40",

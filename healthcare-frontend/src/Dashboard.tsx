@@ -1,16 +1,16 @@
 // src/Dashboard.jsx
 import { useEffect, useState, useRef } from "react";
-import api from "./api";
+import api from "./api.js";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 // COMPONENTS
-import Sidebar from "./components/Sidebar";
-import StatsCards from "./components/StatsCards";
-import AssignmentForm from "./components/AssignmentForm";
-import NurseCards from "./components/NurseCards";
-import ScheduleCalendar from "./components/ScheduleCalendar";
-import TopNav from "./components/TopNav";
-import TodayAssignments from "./components/TodayAssignments";
+import Sidebar from "./components/Sidebar.jsx";
+import StatsCards from "./components/StatsCards.jsx";
+import AssignmentForm from "./components/AssignmentForm.jsx";
+import NurseCards from "./components/NurseCards.jsx";
+import ScheduleCalendar from "./components/ScheduleCalendar.jsx";
+import TopNav from "./components/TopNav.jsx";
+import TodayAssignments from "./components/TodayAssignments.jsx";
 
 // ── SLIDESHOW CONTENT ────────────────────────────────────────────────────────
 const SLIDES = [

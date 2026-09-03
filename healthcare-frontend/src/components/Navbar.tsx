@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
 import MegaMenu from "./MegaMenu";
@@ -8,6 +8,14 @@ import ThemeToggle from "./ThemeToggle";
 export default function Navbar() {
     const [megaOpen, setMegaOpen] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+    const location = useLocation();
+
+    useEffect(() => {
+        setMegaOpen(false);
+        setMobileOpen(false);
+        setMobileServicesOpen(false);
+    }, [location.pathname]);
 
     return (
         <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur-lg">
@@ -102,66 +110,26 @@ export default function Navbar() {
             />
 
             {/* ================= MOBILE MENU ================= */}
-
             {mobileOpen && (
-
-                <div className="border-t bg-white lg:hidden">
-
-                    <div className="space-y-2 p-6">
-
-                        <Link
-                            to="/hospitals"
-                            className="block rounded-lg p-3 hover:bg-gray-100"
-                        >
-                            Hospitals
-                        </Link>
-
-                        <Link
-                            to="/doctors"
-                            className="block rounded-lg p-3 hover:bg-gray-100"
-                        >
-                            Doctors
-                        </Link>
-
-                        <Link
-                            to="/nurses"
-                            className="block rounded-lg p-3 hover:bg-gray-100"
-                        >
-                            Nurses
-                        </Link>
-
-                        <Link
-                            to="/traditional-medicine"
-                            className="block rounded-lg p-3 hover:bg-gray-100"
-                        >
-                            Traditional Medicine
-                        </Link>
-
-                        <Link
-                            to="/pharmacy"
-                            className="block rounded-lg p-3 hover:bg-gray-100"
-                        >
-                            Pharmacy
-                        </Link>
-
-                        <Link
-                            to="/labs"
-                            className="block rounded-lg p-3 hover:bg-gray-100"
-                        >
-                            Laboratory
-                        </Link>
-
-                        <Link
-                            to="/patient-login"
-                            className="block rounded-lg p-3 hover:bg-gray-100"
-                        >
-                            Patients
-                        </Link>
-
+                <div className="max-h-[calc(100vh-5rem)] overflow-y-auto border-t bg-white lg:hidden">
+                    <div className="space-y-2 p-5">
+                        <button onClick={() => setMobileServicesOpen(v => !v)} className="flex w-full items-center justify-between rounded-xl bg-slate-50 p-4 text-left font-bold text-slate-800">
+                            Services <span className="text-xl text-teal-700">{mobileServicesOpen ? "−" : "+"}</span>
+                        </button>
+                        {mobileServicesOpen && <div className="rounded-2xl border border-slate-100 p-3">
+                            <p className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-teal-700">Healthcare Providers</p>
+                            {[['Hospitals','/hospitals'],['Doctors','/doctors'],['Nurses','/nurses'],['Traditional Medicine','/traditional-medicine'],['Pharmacy','/pharmacy'],['Laboratories','/laboratories']].map(([label,path]) => <Link key={label} to={path} className="block rounded-lg px-3 py-2.5 hover:bg-teal-50">{label}</Link>)}
+                            <p className="mt-3 px-3 py-2 text-xs font-bold uppercase tracking-wider text-blue-700">Public Patients</p>
+                            {[['Find Hospital','/hospitals'],['Find Doctor','/doctors'],['Book Appointment','/appointments'],['Patient Portal','/patient-dashboard'],['Patient Login','/patient-login']].map(([label,path]) => <Link key={label} to={path} className="block rounded-lg px-3 py-2.5 hover:bg-blue-50">{label}</Link>)}
+                            <p className="mt-3 px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-500">Business</p>
+                            <Link to="/pricing" className="block rounded-lg px-3 py-2.5 hover:bg-slate-50">Pricing</Link>
+                        </div>}
+                        <Link to="/pricing" className="block rounded-xl p-4 font-semibold hover:bg-slate-50">Pricing</Link>
+                        <Link to="/about" className="block rounded-xl p-4 font-semibold hover:bg-slate-50">About</Link>
+                        <Link to="/contact" className="block rounded-xl p-4 font-semibold hover:bg-slate-50">Contact</Link>
+                        <Link to="/hospital-login" className="block rounded-xl border border-slate-200 p-4 text-center font-semibold">Hospital Login</Link>
                     </div>
-
                 </div>
-
             )}
 
         </header>

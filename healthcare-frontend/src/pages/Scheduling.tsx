@@ -1,12 +1,12 @@
 // src/pages/Scheduling.jsx
 import { useEffect, useState } from "react";
-import api from "../api";
+import api from "../api.js";
 
-import Sidebar from "../components/Sidebar";
-import TopNav from "../components/TopNav";
-import AssignmentForm from "../components/AssignmentForm";
-import ScheduleCalendar from "../components/ScheduleCalendar";
-import TodayAssignments from "../components/TodayAssignments";
+import Sidebar from "../components/Sidebar.js";
+import TopNav from "../components/TopNav.js";
+import AssignmentForm from "../components/AssignmentForm.jsx";
+import ScheduleCalendar from "../components/ScheduleCalendar.js";
+import TodayAssignments from "../components/TodayAssignments.js";
 
 function Scheduling({ setToken }) {
   const [assignments, setAssignments] = useState([]);

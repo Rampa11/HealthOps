@@ -19,14 +19,14 @@ function Sidebar() {
   const location = useLocation();
 
   const navItems = [
-    { name: "Dashboard", icon: HomeIcon, path: "/" },
-    { name: "Scheduling", icon: CalendarIcon, path: "/scheduling" },
-    { name: "Nurses", icon: UserGroupIcon, path: "/nurses" },
-    { name: "Doctors", icon: HeartIcon, path: "/doctors" },
-    { name: "Patients", icon: UserIcon, path: "/patients" },
-    { name: "Billing", icon: CreditCardIcon, path: "/billing" },
-    { name: "Reports", icon: ChartBarIcon, path: "/reports" },
-    { name: "Audit Logs", icon: ClipboardDocumentListIcon, path: "/audit-logs" },
+    { name: "Admin", icon: HomeIcon, path: "/hospital/admin" },
+    { name: "Scheduling", icon: CalendarIcon, path: "/hospital/scheduling" },
+    { name: "Nurses", icon: UserGroupIcon, path: "/hospital/nurses" },
+    { name: "Doctors", icon: HeartIcon, path: "/hospital/doctors" },
+    { name: "Patients", icon: UserIcon, path: "/hospital/patients" },
+    { name: "Accounts", icon: CreditCardIcon, path: "/hospital/accounts" },
+    { name: "HRM", icon: ChartBarIcon, path: "/hospital/hrm" },
+    { name: "Audit Logs", icon: ClipboardDocumentListIcon, path: "/hospital/audit-logs" },
   ];
 
   return (
