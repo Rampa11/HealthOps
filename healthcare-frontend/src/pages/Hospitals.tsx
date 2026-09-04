@@ -16,6 +16,7 @@ import {
     X,
 } from "lucide-react";
 import axios from "axios";
+import ProviderStory from "../components/ProviderStory";
 
 interface Hospital {
     id: string;
@@ -597,6 +598,8 @@ export default function Hospitals() {
             {/* =====================================================
                 RESULTS
             ====================================================== */}
+
+            <ProviderStory kind="hospitals" />
 
             <section className="px-6 py-20 lg:px-8 lg:py-24">
 

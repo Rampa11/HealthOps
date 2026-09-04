@@ -36,9 +36,8 @@ const patients = [
 
 const business = [
     { icon: <Briefcase size={22} />, title: "Pricing", path: "/pricing" },
-    { icon: <Briefcase size={22} />, title: "Enterprise", path: "/enterprise" },
-    { icon: <Briefcase size={22} />, title: "Partners", path: "/partners" },
-    { icon: <Briefcase size={22} />, title: "Developers", path: "/developers" },
+    { icon: <Briefcase size={22} />, title: "About HealthOpz", path: "/about" },
+    { icon: <Briefcase size={22} />, title: "Contact our team", path: "/contact" },
 ];
 
 export default function MegaMenu({ open, onClose }: Props) {

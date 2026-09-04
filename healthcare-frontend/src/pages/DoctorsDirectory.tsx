@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import ProviderStory from "../components/ProviderStory";
 import {
     Search,
     Stethoscope,
@@ -48,7 +49,7 @@ export default function DoctorsDirectory() {
                     `${API}/api/public/doctors`
                 );
 
-                setDoctors(response.data);
+                setDoctors(Array.isArray(response.data) ? response.data : []);
             } catch (err) {
                 console.error("Failed to load doctors:", err);
 
@@ -169,6 +170,7 @@ export default function DoctorsDirectory() {
 
             </section>
 
+            <ProviderStory kind="doctors" />
 
             {/* =====================================================
                 SEARCH / FILTER

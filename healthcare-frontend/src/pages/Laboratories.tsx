@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ProviderStory from "../components/ProviderStory";
 
 interface Laboratory {
     id: string;
@@ -124,6 +125,8 @@ export default function Laboratories() {
                     </div>
                 </div>
             </section>
+
+            <ProviderStory kind="laboratories" />
 
             {/* DIRECTORY */}
             <section
