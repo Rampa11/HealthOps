@@ -3,7 +3,6 @@
 **Connected healthcare operations, provider discovery, and care coordination.**
 
 **Live platform:** https://healthopz.onrender.com  
-**Repository:** https://github.com/Rampa11/HealthOps
 
 HealthOpz is a healthcare operations platform designed to connect healthcare providers and patients while giving participating organizations tools to coordinate people, schedules, services, and financial workflows. Its architecture supports multiple organizations (tenants) within one application, with organization-specific accounts and branding.
 
